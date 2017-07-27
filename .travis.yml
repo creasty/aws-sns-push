@@ -1,0 +1,46 @@
+language: go
+go:       1.7
+
+branches:
+  only:
+    - master
+    - /^v[\d\.]+$/
+
+env:
+  global:
+    # CODECOV_TOKEN
+    - secure: TODO
+
+cache:
+  directories:
+    - vendor
+
+before_install:
+  - sudo add-apt-repository ppa:masterminds/glide -y
+  - sudo apt-get update -q
+  - sudo apt-get install glide -y
+  - mkdir -p $GOPATH/bin
+  - go get -u github.com/golang/lint/golint
+
+install:
+  - glide install
+
+script:
+  - make ci-test
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+before_deploy:
+  - make ci-build
+  - make dist
+
+deploy:
+  provider: releases
+  api_key:
+    secure: TODO
+  skip_cleanup: true
+  file_glob: true
+  file: 'dist/*.{tar.gz,zip}'
+  on:
+    tags: true

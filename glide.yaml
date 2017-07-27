@@ -1,0 +1,4 @@
+package: github.com/creasty/aws-sns-push
+import:
+- package: github.com/urfave/cli
+  version: ^1.19.1
