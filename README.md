@@ -9,6 +9,17 @@ aws-sns-push
 Send SNS push notifications painlessly.
 
 
+Installation
+------------
+
+```sh
+$ brew install creasty/tools/aws-sns-push
+```
+
+
+Usage
+-----
+
 ```sh-session
 $ aws-sns-push -h
 Send SNS push notifications painlessly.
