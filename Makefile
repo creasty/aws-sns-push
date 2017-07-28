@@ -3,7 +3,7 @@
 SHELL := /bin/bash -eu -o pipefail
 
 NAME     := aws-sns-push
-VERSION  := 0.0.1
+VERSION  := 0.1.0
 REVISION := $(shell git rev-parse --short HEAD)
 
 GO_BUILD_FLAGS := -v -ldflags="-s -w -X \"github.com/creasty/aws-sns-push/version.Version=$(VERSION)\" -X \"github.com/creasty/aws-sns-push/version.Revision=$(REVISION)\" -extldflags \"-static\""
