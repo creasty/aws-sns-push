@@ -6,14 +6,14 @@ branches:
     - master
     - /^v[\d\.]+$/
 
-env:
-  global:
-    # CODECOV_TOKEN
-    - secure: TODO
-
 cache:
   directories:
     - vendor
+
+env:
+  global:
+    # CODECOV_TOKEN
+    # - secure: TODO
 
 before_install:
   - sudo add-apt-repository ppa:masterminds/glide -y
@@ -29,7 +29,7 @@ script:
   - make ci-test
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  # - bash <(curl -s https://codecov.io/bash)
 
 before_deploy:
   - make ci-build
@@ -38,7 +38,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: TODO
+    secure: Vk7l2XxnKX9Pvkv5TxuPt6y/NAOkyHyeMUpRAvtnfP9CicEzwcOM1x7nupQ3xkO6b8GsDN4hlKI6+KpP3ADr8hX/K7IBqAsrBXsAR1OgcxGDmvm05XVn+pqj88H2rAUJqr4sCrtC4xbId1UdDyewOJt5E0WOwWBiURH0N4LQozPGvXs/5QdFAXg8DwssLZeccqcvliGO5ClkTUKH8ocNNI/JNagArFXHDtwa2OmBgFXMzBR83EmQLoAg48pUagVqn0l+HxSJ1nqRroRKzzRwkvfxdrG/sr5+ladqP66SGlzeZZ8EGCR69tryB8T5RMKO8aR2mniEZPtH8nsziDQKIDMBIg6Gf9UTgkXk2saOyrrFPN8TyTUWD3ObIck4PQKuOBBZ/bpiuvJXozrNhtMxUDFabVauMIa7ZFZj3XI9d9pWFcB5fd8nHlYdHyQAH2Xs84nlvOq9ZbuO3QLqpW/L8mtOCb9mI3yqgJHCGBwFvSq57VCwDZ07/0PJI++hyhAy3V/yGH514nA2A2AU5rGeblrBRSrDsFQug5RHvCkxHP6d+EOIDudxCNB/gVDPqhhPWBFeUZ+6xb95MdFl+w9bOkhYQqiklv0MWoGSfTU4YTNSO3OhvpDofGUb2wTViCx7DYtRvy1y0HsjG2+m9MQIjPLQ41ETxIQLOi2AHzcmKQ8=
   skip_cleanup: true
   file_glob: true
   file: 'dist/*.{tar.gz,zip}'
