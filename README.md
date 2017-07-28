@@ -55,7 +55,7 @@ $ aws-sns-push sample-prod/12345
 > Proceed to send [y] y
 ```
 
-### Advance usage with `jq`
+### Advanced usage with `jq`
 
 ```sh-session
 $ cat | jq '{ APNS: (. | tojson) }' | aws-sns-push -y sample-prod/12345
