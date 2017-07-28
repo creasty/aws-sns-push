@@ -1,46 +1,65 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
-	"github.com/urfave/cli"
-
 	"github.com/creasty/aws-sns-push/version"
+	"github.com/k0kubun/pp"
 )
 
+var flagYes bool
+var flagVersion bool
+
+func init() {
+	flag.BoolVar(&flagYes, "y", false, "Send without confirmation")
+	flag.BoolVar(&flagVersion, "v", false, "Show version")
+	flag.Usage = showHelp
+	flag.Parse()
+}
+
 func main() {
-	app := cli.NewApp()
-	app.Name = "aws-sns-push"
-	app.Usage = "Send SNS push notifications painlessly"
-	app.UsageText = "aws-sns-push [options]"
-	app.Version = fmt.Sprintf("%s (%s)", version.Version, version.Revision)
-
-	app.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:  "app, a",
-			Usage: "Name of a platform application",
-		},
-		cli.IntFlag{
-			Name:  "user, u",
-			Usage: "Target user ID",
-		},
-		cli.StringFlag{
-			Name:  "token, t",
-			Usage: "Filter by a device token prefix",
-		},
-		cli.BoolFlag{
-			Name:  "yes, y",
-			Usage: "Send without confirmation",
-		},
+	if len(os.Args) < 2 {
+		showHelp()
+		return
 	}
 
-	app.Action = func(c *cli.Context) error {
-		fmt.Println(c.GlobalString("app"))
-		fmt.Println(c.GlobalString("token"))
-		fmt.Println(c.GlobalInt("user"))
-		return nil
+	if flagVersion {
+		showVersion()
+		return
 	}
 
-	app.Run(os.Args)
+	target := ParseTarget(os.Args[1])
+	pp.Println(target)
+}
+
+func showVersion() {
+	fmt.Printf("%s (%s)\n", version.Version, version.Revision)
+}
+
+func showHelp() {
+	fmt.Printf(`Send SNS push notifications painlessly.
+
+USAGE:
+    aws-sns-push [OPTIONS] TARGET
+
+TARGET:
+    1. {application-name}/{user-id}
+       e.g., sample-production/12345
+
+    2. {application-name}/{user-id}/{device-token}
+       e.g., sample-production/12345/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+
+    3. {application-name}/{device-token}
+       e.g., sample-production/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+
+    4. {endpoint-arn}
+       e.g., arn:aws:sns:ap-northeast-1:000000000000:endpoint/sample-production/ffffffff-ffff-ffff-ffff-ffffffffffff
+
+OPTIONS:
+    -y    Send without confirmation
+    -h    Show help
+`)
+	os.Exit(1)
 }
