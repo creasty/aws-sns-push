@@ -12,7 +12,7 @@ type TargetMode int
 // Enum of TargetMode
 const (
 	TargetModeUnknown TargetMode = iota
-	TargetModeUser
+	TargetModeUserID
 	TargetModeDeviceToken
 	TargetModeEndpointArn
 )
@@ -20,6 +20,7 @@ const (
 // Target represents a target to receive push notification
 type Target struct {
 	Mode            TargetMode
+	String          string
 	ApplicationName string
 	UserID          int64
 	DeviceToken     string
@@ -27,24 +28,25 @@ type Target struct {
 }
 
 var (
-	targetUserPattern        = regexp.MustCompile(`^([\w-]+)/(\d+)(?:/([\w-]+))?$`)
+	targetUserIDPattern      = regexp.MustCompile(`^([\w-]+)/(\d+)$`)
 	targetDeviceTokenPattern = regexp.MustCompile(`^([\w-]+)/([\w-]+)$`)
 	targetEndpointPattern    = regexp.MustCompile(`^arn:aws:sns:[\w-]+:\d+:endpoint/.+$`)
 )
 
 // ParseTarget parses string-represented identifier into Target
 func ParseTarget(id string) (t Target) {
+	t.String = id
+
 	if targetEndpointPattern.MatchString(id) {
 		t.Mode = TargetModeEndpointArn
 		t.EndpointArn = id
 		return
 	}
 
-	if m := targetUserPattern.FindStringSubmatch(id); len(m) == 4 {
-		t.Mode = TargetModeUser
+	if m := targetUserIDPattern.FindStringSubmatch(id); len(m) == 3 {
+		t.Mode = TargetModeUserID
 		t.ApplicationName = m[1]
 		t.UserID, _ = strconv.ParseInt(m[2], 10, 64)
-		t.DeviceToken = m[3]
 		return
 	}
 
