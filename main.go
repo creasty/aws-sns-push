@@ -7,11 +7,14 @@ import (
 	"os"
 
 	"github.com/creasty/aws-sns-push/aws"
+	"github.com/creasty/aws-sns-push/util"
 	"github.com/creasty/aws-sns-push/version"
 )
 
-var flagYes bool
-var flagVersion bool
+var (
+	flagYes     bool
+	flagVersion bool
+)
 
 func init() {
 	flag.BoolVar(&flagYes, "y", false, "Send without confirmation")
@@ -21,7 +24,9 @@ func init() {
 }
 
 func main() {
-	if len(os.Args) < 2 {
+	args := flag.Args()
+
+	if len(args) < 1 {
 		showHelp()
 		return
 	}
@@ -31,8 +36,8 @@ func main() {
 		return
 	}
 
-	target := ParseTarget(os.Args[1])
-	if target.Mode == TargetModeUnknown {
+	target := util.ParseTarget(args[0])
+	if target.Mode == util.TargetModeUnknown {
 		fmt.Fprintf(os.Stderr, "Invalid target: %q\n", target.String)
 		showHelp()
 	}
@@ -67,15 +72,16 @@ OPTIONS:
 	os.Exit(1)
 }
 
-func doSend(target Target) {
+func doSend(target util.Target) {
 	s := aws.NewSNS()
 
 	endpoints := make([]string, 0)
+	isPiped := util.IsPiped()
 
 	switch target.Mode {
-	case TargetModeEndpointArn:
+	case util.TargetModeEndpointArn:
 		endpoints = append(endpoints, target.EndpointArn)
-	case TargetModeUserID, TargetModeDeviceToken:
+	case util.TargetModeUserID, util.TargetModeDeviceToken:
 		eps, err := s.FindEndpointsFor(target.ApplicationName, target.UserID, target.DeviceToken)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -84,8 +90,15 @@ func doSend(target Target) {
 		endpoints = append(endpoints, eps...)
 	}
 
-	if !IsPiped() {
-		fmt.Println("Enter JSON message (Ctrl-D):")
+	if !flagYes {
+		fmt.Println("==> Endpoints")
+		for _, ep := range endpoints {
+			fmt.Printf("- %s\n", ep)
+		}
+	}
+
+	if !isPiped {
+		fmt.Println("==> Enter JSON message (Ctrl-D)")
 	}
 
 	bytes, err := ioutil.ReadAll(os.Stdin)
@@ -94,13 +107,28 @@ func doSend(target Target) {
 		os.Exit(1)
 	}
 
-	payload := string(bytes)
-	if payload == "" {
+	message := string(bytes)
+	if message == "" {
 		fmt.Fprintf(os.Stderr, "No message given\n")
 		os.Exit(1)
 	}
 
-	if err := s.Send(endpoints, payload); err != nil {
+	if !flagYes {
+		if isPiped {
+			fmt.Printf("==> Message\n%s\n", message)
+		}
+
+		if f, err := util.AskBool("Proceed to send"); !f {
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+			} else {
+				fmt.Fprintf(os.Stderr, "canceled\n")
+			}
+			os.Exit(1)
+		}
+	}
+
+	if err := s.Send(endpoints, message); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}

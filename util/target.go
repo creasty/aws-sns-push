@@ -1,7 +1,6 @@
-package main
+package util
 
 import (
-	"os"
 	"regexp"
 	"strconv"
 )
@@ -58,10 +57,4 @@ func ParseTarget(id string) (t Target) {
 	}
 
 	return
-}
-
-// IsPiped returns true when data is piped into Stdin
-func IsPiped() bool {
-	stat, _ := os.Stdin.Stat()
-	return (stat.Mode() & os.ModeCharDevice) == 0
 }
