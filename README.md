@@ -21,7 +21,7 @@ Usage
 -----
 
 ```sh-session
-$ aws-sns-push -h
+$ aws-sns-push
 Send SNS push notifications painlessly.
 
 USAGE:
@@ -29,15 +29,43 @@ USAGE:
 
 TARGET:
     1. {application-name}/{user-id}
-       e.g., sample-production/12345
+       e.g., sample-prod/12345
 
     2. {application-name}/{device-token}
-       e.g., sample-production/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+       e.g., sample-prod/ffffff
 
     3. {endpoint-arn}
-       e.g., arn:aws:sns:ap-northeast-1:000000000000:endpoint/sample-production/ffffffff-ffff-ffff-ffff-ffffffffffff
+       e.g., arn:aws:sns:ap-northeast-1:0000:endpoint/APNS/sample-prod/ffffff
 
 OPTIONS:
     -y    Send without confirmation
     -h    Show help
+```
+
+### Send
+
+```sh-session
+$ aws-sns-push sample-prod/12345
+==> Endpoints
+- arn:aws:sns:ap-northeast-1:000000000000:endpoint/APNS/sample-prod/ffffffff-ffff-ffff-ffff-ffffffffffff
+==> Enter JSON message (Ctrl-D)
+{
+  "APNS": "{\"aps\":{\"alert\":{\"title\":\"Hello from aws-sns-push\",\"body\":\"This is awesome\"}}}"
+}
+> Proceed to send [y] y
+```
+
+### Advance usage with `jq`
+
+```sh-session
+$ cat | jq '{ APNS: (. | tojson) }' | aws-sns-push -y sample-prod/12345
+{
+  "aps": {
+    "alert": {
+      "title": "Hello from aws-sns-push",
+      "body": "This is awesome"
+    }
+  }
+}
+^D
 ```

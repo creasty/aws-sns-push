@@ -57,13 +57,13 @@ USAGE:
 
 TARGET:
     1. {application-name}/{user-id}
-       e.g., sample-production/12345
+       e.g., sample-prod/12345
 
     2. {application-name}/{device-token}
-       e.g., sample-production/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+       e.g., sample-prod/ffffff
 
     3. {endpoint-arn}
-       e.g., arn:aws:sns:ap-northeast-1:000000000000:endpoint/sample-production/ffffffff-ffff-ffff-ffff-ffffffffffff
+       e.g., arn:aws:sns:ap-northeast-1:0000:endpoint/APNS/sample-prod/ffffff
 
 OPTIONS:
     -y    Send without confirmation
