@@ -24,7 +24,7 @@ func AskBool(prompt string) (bool, error) {
 	}
 
 	switch scanner.Text() {
-	case "y", "yes", "1":
+	case "y", "yes", "ok", "1":
 		return true, nil
 	default:
 		return false, nil
