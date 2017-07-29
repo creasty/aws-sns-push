@@ -26,13 +26,13 @@ func init() {
 func main() {
 	args := flag.Args()
 
-	if len(args) < 1 {
-		showHelp()
+	if flagVersion {
+		showVersion()
 		return
 	}
 
-	if flagVersion {
-		showVersion()
+	if len(args) < 1 {
+		showHelp()
 		return
 	}
 
@@ -67,6 +67,7 @@ TARGET:
 
 OPTIONS:
     -y    Send without confirmation
+    -v    Show version
     -h    Show help
 `)
 	os.Exit(1)

@@ -39,6 +39,7 @@ TARGET:
 
 OPTIONS:
     -y    Send without confirmation
+    -v    Show version
     -h    Show help
 ```
 
